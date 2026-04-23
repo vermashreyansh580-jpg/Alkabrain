@@ -16,8 +16,8 @@ export function Navbar() {
           <span className="font-bold text-xl tracking-tight text-[#2F2723]">AlkaBrain</span>
         </div>
         <Button className="bg-[#E87D30] hover:bg-[#D86818] text-white rounded-full font-medium" asChild>
-          <a href="https://shrey77777-alkabrain.hf.space/" target="_blank" rel="noopener noreferrer">
-            Launch App
+          <a href="/alkabrain.apk" download>
+            Download APK
           </a>
         </Button>
       </div>
