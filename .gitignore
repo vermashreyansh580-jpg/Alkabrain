@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+.cache
+.local
+.replit-artifact
+*.log
+.env
+.env.local
