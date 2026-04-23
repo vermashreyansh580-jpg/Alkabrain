@@ -1,9 +1,12 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { VideoDemo } from "@/components/VideoDemo";
+import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import logoPng from "@assets/logo.png";
+
+const APK_URL = "/alkabrain.apk";
 
 function Features() {
   const features = [
@@ -22,13 +25,13 @@ function Features() {
   ];
 
   return (
-    <section id="features" className="py-24 bg-[#FCFAF8]">
+    <section id="features" className="py-24">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {features.map((feature, i) => (
             <motion.div
               key={i}
-              className="p-8 rounded-2xl bg-white shadow-sm border border-[#FAEEE4] hover:shadow-md transition-shadow"
+              className="p-8 rounded-2xl bg-white/70 backdrop-blur-md shadow-sm border border-[#FAEEE4] hover:shadow-md transition-shadow"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -49,7 +52,7 @@ function Features() {
 
 function CTASection() {
   return (
-    <section className="py-32 bg-[#E87D30] relative overflow-hidden">
+    <section className="py-32 bg-[#E87D30]/90 backdrop-blur-md relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,white_0%,transparent_100%)]"></div>
       <div className="container mx-auto px-4 relative z-10 text-center">
         <motion.div
@@ -60,13 +63,15 @@ function CTASection() {
           <img src={logoPng} alt="AlkaBrain" className="w-20 h-20 mx-auto mb-8 brightness-0 invert" />
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">Ready to expand your mind?</h2>
           <p className="text-[#FAEEE4] text-xl mb-10 max-w-2xl mx-auto">
-            Join the creators, thinkers, and builders who are already using AlkaBrain to multiply their capabilities.
+            Download AlkaBrain on your phone and carry a thinking companion in your pocket.
           </p>
           <Button size="lg" className="h-16 px-10 text-xl font-bold bg-white text-[#E87D30] hover:bg-[#FAEEE4] rounded-full shadow-xl transition-transform hover:scale-105" asChild>
-            <a href="https://shrey77777-alkabrain.hf.space/" target="_blank" rel="noopener noreferrer">
-              Launch AlkaBrain Now
+            <a href={APK_URL} download>
+              <Download className="w-6 h-6 mr-2" />
+              Download AlkaBrain APK
             </a>
           </Button>
+          <p className="text-[#FAEEE4]/80 text-sm mt-4">Android · Free · Latest version</p>
         </motion.div>
       </div>
     </section>
@@ -75,13 +80,13 @@ function CTASection() {
 
 function Footer() {
   return (
-    <footer className="py-12 bg-[#2F2723] text-[#7E7367] text-center">
+    <footer className="py-12 bg-[#2F2723]/90 backdrop-blur-md text-[#7E7367] text-center">
       <div className="container mx-auto px-4 flex flex-col items-center">
         <img src={logoPng} alt="AlkaBrain" className="w-8 h-8 mb-6 opacity-50 grayscale" />
         <div className="flex gap-6 mb-8">
           <a href="#" className="hover:text-white transition-colors">Privacy</a>
           <a href="#" className="hover:text-white transition-colors">Terms</a>
-          <a href="https://shrey77777-alkabrain.hf.space/" target="_blank" rel="noopener noreferrer" className="text-[#E87D30] hover:text-[#FAEEE4] transition-colors">Launch App</a>
+          <a href={APK_URL} download className="text-[#E87D30] hover:text-[#FAEEE4] transition-colors">Download APK</a>
         </div>
         <p>© {new Date().getFullYear()} AlkaBrain. All rights reserved.</p>
       </div>
@@ -91,11 +96,11 @@ function Footer() {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-[#FCFAF8] text-[#2F2723] font-sans selection:bg-[#E87D30] selection:text-white">
+    <div className="min-h-screen text-[#2F2723] font-sans selection:bg-[#E87D30] selection:text-white">
+      <BackgroundVideo />
       <Navbar />
       <Hero />
       <Features />
-      <VideoDemo />
       <CTASection />
       <Footer />
     </div>
