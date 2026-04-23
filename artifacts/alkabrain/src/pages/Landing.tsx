@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import logoPng from "@assets/logo.png";
 
-const APK_URL = "/alkabrain.apk";
+const APK_URL = "https://raw.githubusercontent.com/vermashreyansh580-jpg/Alkabrain/main/artifacts/alkabrain/public/alkabrain.apk";
 
 function Features() {
   const features = [
@@ -66,7 +66,7 @@ function CTASection() {
             Download AlkaBrain on your phone and carry a thinking companion in your pocket.
           </p>
           <Button size="lg" className="h-16 px-10 text-xl font-bold bg-white text-[#E87D30] hover:bg-[#FAEEE4] rounded-full shadow-xl transition-transform hover:scale-105" asChild>
-            <a href={APK_URL} download>
+            <a href={APK_URL} download="AlkaBrain.apk">
               <Download className="w-6 h-6 mr-2" />
               Download AlkaBrain APK
             </a>
@@ -86,7 +86,7 @@ function Footer() {
         <div className="flex gap-6 mb-8">
           <a href="#" className="hover:text-white transition-colors">Privacy</a>
           <a href="#" className="hover:text-white transition-colors">Terms</a>
-          <a href={APK_URL} download className="text-[#E87D30] hover:text-[#FAEEE4] transition-colors">Download APK</a>
+          <a href={APK_URL} download="AlkaBrain.apk" className="text-[#E87D30] hover:text-[#FAEEE4] transition-colors">Download APK</a>
         </div>
         <p>© {new Date().getFullYear()} AlkaBrain. All rights reserved.</p>
       </div>
