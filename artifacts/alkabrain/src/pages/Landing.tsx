@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import logoPng from "@assets/logo.png";
 
-// यहाँ मैंने तेरे लिंक से 'blob' हटाकर 'raw' कर दिया है। अब यह 100% असली APK ही देगा।
-const APK_URL = "https://github.com/vermashreyansh580-jpg/Alkabrain/raw/main/artifacts/alkabrain/public/alkabrain.apk";
+// LIVE WEBSITE DIRECT LINK - इससे ब्राउज़र को कोई कंफ्यूजन नहीं होगा
+const APK_URL = "https://vermashreyansh580-jpg.github.io/Alkabrain/alkabrain.apk";
 
 function Features() {
   const features = [
@@ -67,7 +67,8 @@ function CTASection() {
             Download AlkaBrain on your phone and carry a thinking companion in your pocket.
           </p>
           <Button size="lg" className="h-16 px-10 text-xl font-bold bg-white text-[#E87D30] hover:bg-[#FAEEE4] rounded-full shadow-xl transition-transform hover:scale-105" asChild>
-            <a href={APK_URL} download="alkabrain.apk">
+            {/* target="_blank" लगाने से यह नए टैब में खुलेगा और cache की प्रॉब्लम नहीं होगी */}
+            <a href={APK_URL} target="_blank" rel="noopener noreferrer" download="alkabrain.apk">
               <Download className="w-6 h-6 mr-2" />
               Download AlkaBrain APK
             </a>
@@ -87,7 +88,7 @@ function Footer() {
         <div className="flex gap-6 mb-8">
           <a href="#" className="hover:text-white transition-colors">Privacy</a>
           <a href="#" className="hover:text-white transition-colors">Terms</a>
-          <a href={APK_URL} download="alkabrain.apk" className="text-[#E87D30] hover:text-[#FAEEE4] transition-colors">Download APK</a>
+          <a href={APK_URL} target="_blank" rel="noopener noreferrer" download="alkabrain.apk" className="text-[#E87D30] hover:text-[#FAEEE4] transition-colors">Download APK</a>
         </div>
         <p>© {new Date().getFullYear()} AlkaBrain. All rights reserved.</p>
       </div>
