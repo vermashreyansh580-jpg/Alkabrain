@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Suspense, lazy } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Download } from "lucide-react";
 
 const Scene = lazy(() => import("./Scene"));
 
@@ -37,8 +37,9 @@ export function Hero() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pointer-events-auto">
               <Button size="lg" className="h-14 px-8 text-lg font-semibold bg-[#E87D30] hover:bg-[#D86818] text-white shadow-[0_0_40px_-10px_rgba(232,125,48,0.5)] rounded-full transition-all duration-300 hover:scale-105" asChild>
-                <a href="https://shrey77777-alkabrain.hf.space/" target="_blank" rel="noopener noreferrer">
-                  Launch AlkaBrain
+                <a href="/alkabrain.apk" download>
+                  <Download className="w-5 h-5 mr-2" />
+                  Download APK
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-medium border-[#7E7367]/20 text-[#2F2723] hover:bg-[#FAEEE4] rounded-full transition-all duration-300" asChild>
