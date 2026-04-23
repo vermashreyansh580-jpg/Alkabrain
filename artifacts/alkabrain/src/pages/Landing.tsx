@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import logoPng from "@assets/logo.png";
 
-// GITHUB FORCE DOWNLOAD URL - यह ब्राउज़र को स्ट्रिक्टली बताएगा कि इसे सिर्फ .apk फॉर्मेट में ही डाउनलोड करना है
+// यहाँ मैंने तेरे लिंक से 'blob' हटाकर 'raw' कर दिया है। अब यह 100% असली APK ही देगा।
 const APK_URL = "https://github.com/vermashreyansh580-jpg/Alkabrain/raw/main/artifacts/alkabrain/public/alkabrain.apk";
 
 function Features() {
