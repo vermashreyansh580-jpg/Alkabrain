@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import logoPng from "@assets/logo.png";
 
-const APK_URL = "https://raw.githubusercontent.com/vermashreyansh580-jpg/Alkabrain/main/artifacts/alkabrain/public/alkabrain.apk";
+const APK_URL = `${import.meta.env.BASE_URL}alkabrain.apk`;
 
 function Features() {
   const features = [
