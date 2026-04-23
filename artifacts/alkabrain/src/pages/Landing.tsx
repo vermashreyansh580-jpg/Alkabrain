@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import logoPng from "@assets/logo.png";
 
-// DIRECT GITHUB RAW URL - यह Vite के बिल्ड को बायपास करके सीधे तुम्हारी रिपॉजिटरी से APK उठाएगा
-const APK_URL = "https://raw.githubusercontent.com/vermashreyansh580-jpg/Alkabrain/main/artifacts/alkabrain/public/alkabrain.apk";
+// GITHUB FORCE DOWNLOAD URL - यह ब्राउज़र को स्ट्रिक्टली बताएगा कि इसे सिर्फ .apk फॉर्मेट में ही डाउनलोड करना है
+const APK_URL = "https://github.com/vermashreyansh580-jpg/Alkabrain/raw/main/artifacts/alkabrain/public/alkabrain.apk";
 
 function Features() {
   const features = [
