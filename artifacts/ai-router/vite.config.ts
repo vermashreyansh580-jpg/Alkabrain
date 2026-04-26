@@ -21,10 +21,11 @@ if (!isBuild && !rawPort) {
   );
 }
 
-const basePath = process.env.BASE_PATH ?? "/";
+// Yahan se humne process.env.BASE_PATH hata diya hai
+// Kyunki custom domain (alkabrain.tech) ke liye base hamesha "/" hona chahiye
 
 export default defineConfig({
-  base: basePath,
+  base: "/", // Yahan directly "/" set kar diya hai
   plugins: [
     react(),
     tailwindcss(),
