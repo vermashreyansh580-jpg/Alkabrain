@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "tZxa7TaICoZ3w_pWcoi4a"
+uri = "file://artifacts/ai-router/src/assets/alkabrain-logo.png"
+type = "image"
+title = "alkabrain logo"

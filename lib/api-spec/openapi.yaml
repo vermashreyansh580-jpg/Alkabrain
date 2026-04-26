@@ -2,21 +2,24 @@ openapi: 3.1.0
 info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 0.2.0
+  description: ALKABRAIN — AI Router with auth, billing, and self-deployment.
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: Auth
+  - name: models
+  - name: chat
+  - name: billing
+  - name: deploy
+  - name: webhooks
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
-      summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +27,491 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/user:
+    get:
+      tags: [Auth]
+      operationId: getCurrentAuthUser
+      summary: Get the currently authenticated user
+      parameters:
+        - $ref: "#/components/parameters/AuthorizationSessionHeader"
+        - $ref: "#/components/parameters/SessionCookie"
+      responses:
+        "200":
+          description: Auth status resolved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUserEnvelope"
+  /login:
+    get:
+      tags: [Auth]
+      operationId: beginBrowserLogin
+      parameters:
+        - name: returnTo
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "302": { description: Redirect to OIDC. }
+  /callback:
+    get:
+      tags: [Auth]
+      operationId: handleBrowserLoginCallback
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema: { type: string }
+        - name: state
+          in: query
+          required: false
+          schema: { type: string }
+        - name: iss
+          in: query
+          required: false
+          schema: { type: string, format: uri }
+      responses:
+        "302": { description: Redirect after callback. }
+  /logout:
+    get:
+      tags: [Auth]
+      operationId: logoutBrowserSession
+      parameters:
+        - $ref: "#/components/parameters/AuthorizationSessionHeader"
+        - $ref: "#/components/parameters/SessionCookie"
+      responses:
+        "302": { description: Redirect to OIDC end-session. }
+  /mobile-auth/token-exchange:
+    post:
+      tags: [Auth]
+      operationId: exchangeMobileAuthorizationCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MobileTokenExchangeRequest"
+      responses:
+        "200":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MobileTokenExchangeSuccess"
+        "400":
+          description: Invalid
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+        "500":
+          description: Failed
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+  /mobile-auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logoutMobileSession
+      parameters:
+        - $ref: "#/components/parameters/AuthorizationSessionHeader"
+      responses:
+        "200":
+          description: Logout processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutSuccess"
+
+  /models:
+    get:
+      operationId: listModels
+      tags: [models]
+      responses:
+        "200":
+          description: Model catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [models]
+                properties:
+                  models:
+                    type: array
+                    items: { $ref: "#/components/schemas/ModelInfo" }
+
+  /chat:
+    post:
+      operationId: sendChat
+      tags: [chat]
+      summary: Send a chat message; backend auto-routes & may use multi-agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChatRequest" }
+      responses:
+        "200":
+          description: Assistant reply
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatResponse" }
+        "401":
+          description: Auth required
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+        "429":
+          description: Rate limited
+          content: { application/json: { schema: { $ref: "#/components/schemas/RateLimitError" } } }
+
+  /billing/tiers:
+    get:
+      operationId: listBillingTiers
+      tags: [billing]
+      responses:
+        "200":
+          description: Available subscription tiers
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tiers]
+                properties:
+                  tiers:
+                    type: array
+                    items: { $ref: "#/components/schemas/BillingTier" }
+  /billing/me:
+    get:
+      operationId: getMyBilling
+      tags: [billing]
+      responses:
+        "200":
+          description: Current user's tier and usage
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MyBilling" }
+        "401":
+          description: Auth required
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+
+  /webhooks/razorpay:
+    post:
+      operationId: razorpayWebhook
+      tags: [webhooks]
+      summary: Razorpay webhook receiver (HMAC verified)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RazorpayWebhookEvent"
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean }
+        "400":
+          description: Invalid signature
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+
+  /deploy/config:
+    get:
+      operationId: getDeployConfig
+      tags: [deploy]
+      responses:
+        "200":
+          description: Config
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeployConfig" }
+
+  /deploy/push:
+    post:
+      operationId: triggerDeploy
+      tags: [deploy]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DeployRequest" }
+      responses:
+        "200":
+          description: Deployment started
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeployJob" }
+
+  /deploy/status:
+    get:
+      operationId: getDeployStatus
+      tags: [deploy]
+      responses:
+        "200":
+          description: Status
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeployStatus" }
+
+  /deploy/history:
+    get:
+      operationId: listDeployHistory
+      tags: [deploy]
+      responses:
+        "200":
+          description: History
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [jobs]
+                properties:
+                  jobs:
+                    type: array
+                    items: { $ref: "#/components/schemas/DeployJob" }
+
 components:
+  parameters:
+    AuthorizationSessionHeader:
+      name: Authorization
+      in: header
+      required: false
+      schema: { type: string }
+    SessionCookie:
+      name: sid
+      in: cookie
+      required: false
+      schema: { type: string }
+
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
 
+    AuthUser:
+      type: object
+      required: [id, email, firstName, lastName, profileImageUrl]
+      properties:
+        id: { type: string }
+        email: { type: [string, "null"], format: email }
+        firstName: { type: [string, "null"] }
+        lastName: { type: [string, "null"] }
+        profileImageUrl: { type: [string, "null"] }
+    AuthUserEnvelope:
+      type: object
+      required: [user]
+      properties:
+        user:
+          oneOf:
+            - $ref: "#/components/schemas/AuthUser"
+            - type: "null"
+    MobileTokenExchangeRequest:
+      type: object
+      required: [code, code_verifier, redirect_uri, state]
+      properties:
+        code: { type: string, minLength: 1 }
+        code_verifier: { type: string, minLength: 1 }
+        redirect_uri: { type: string, minLength: 1, format: uri }
+        state: { type: string, minLength: 1 }
+        nonce: { type: string, minLength: 1 }
+    MobileTokenExchangeSuccess:
+      type: object
+      required: [token]
+      properties:
+        token: { type: string }
+    LogoutSuccess:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean, const: true }
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+
+    ModelInfo:
+      type: object
+      required: [id, label, provider, intents, description]
+      properties:
+        id: { type: string }
+        label: { type: string }
+        provider: { type: string }
+        intents:
+          type: array
+          items: { type: string }
+        description: { type: string }
+        contextWindow: { type: integer, nullable: true }
+
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content: { type: string }
+
+    ChatRequest:
+      type: object
+      required: [messages]
+      properties:
+        messages:
+          type: array
+          items: { $ref: "#/components/schemas/ChatMessage" }
+        modelId:
+          type: string
+          nullable: true
+        temperature:
+          type: number
+          nullable: true
+        conversationId:
+          type: integer
+          nullable: true
+
+    ArtifactPayload:
+      type: object
+      required: [kind, content]
+      properties:
+        kind:
+          type: string
+          enum: [code, markdown, html, mermaid]
+        language:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        content: { type: string }
+
+    AgentStep:
+      type: object
+      required: [role, modelId, modelLabel]
+      properties:
+        role: { type: string, description: "e.g. coder, reviewer, generalist" }
+        modelId: { type: string }
+        modelLabel: { type: string }
+        latencyMs: { type: integer }
+
+    ChatResponse:
+      type: object
+      required: [reply, modelId, modelLabel, intent, latencyMs]
+      properties:
+        reply: { type: string }
+        modelId: { type: string }
+        modelLabel: { type: string }
+        intent: { type: string }
+        latencyMs: { type: integer }
+        conversationId:
+          type: integer
+          nullable: true
+        artifact:
+          oneOf:
+            - $ref: "#/components/schemas/ArtifactPayload"
+            - type: "null"
+        routerReason:
+          type: string
+          nullable: true
+        agents:
+          type: array
+          nullable: true
+          items: { $ref: "#/components/schemas/AgentStep" }
+
+    RateLimitError:
+      type: object
+      required: [error, tier, used, limit, resetAt]
+      properties:
+        error: { type: string }
+        tier: { type: string }
+        used: { type: integer }
+        limit: { type: integer }
+        resetAt: { type: string, format: date-time }
+        retryAfterSec: { type: integer }
+        upgradeUrl: { type: string, nullable: true }
+
+    BillingTier:
+      type: object
+      required: [id, name, priceInr, dailyMessages, features]
+      properties:
+        id:
+          type: string
+          enum: [free, starter, pro]
+        name: { type: string }
+        priceInr: { type: integer }
+        priceLabel: { type: string }
+        dailyMessages: { type: integer }
+        multiAgent: { type: boolean }
+        allModels: { type: boolean }
+        priorityRouting: { type: boolean }
+        paymentLink:
+          type: string
+          nullable: true
+        features:
+          type: array
+          items: { type: string }
+
+    MyBilling:
+      type: object
+      required: [tier, usage]
+      properties:
+        tier: { $ref: "#/components/schemas/BillingTier" }
+        subscription:
+          type: object
+          nullable: true
+          required: [status]
+          properties:
+            status: { type: string }
+            startedAt: { type: string, format: date-time }
+            currentPeriodEnd:
+              type: string
+              format: date-time
+              nullable: true
+        usage:
+          type: object
+          required: [messagesToday, dailyLimit, resetAt]
+          properties:
+            messagesToday: { type: integer }
+            dailyLimit: { type: integer }
+            resetAt: { type: string, format: date-time }
+            remaining: { type: integer }
+
+    RazorpayWebhookEvent:
+      type: object
+      additionalProperties: true
+      properties:
+        event: { type: string }
+
+    DeployRequest:
+      type: object
+      properties:
+        commitMessage: { type: string }
+    DeployConfig:
+      type: object
+      required: [spaceRepo, hasToken, defaultBranch]
+      properties:
+        spaceRepo: { type: string }
+        hasToken: { type: boolean }
+        defaultBranch: { type: string }
+    DeployJob:
+      type: object
+      required: [id, startedAt, state, spaceRepo]
+      properties:
+        id: { type: string }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        state:
+          type: string
+          enum: [pending, pushing, building, success, failed]
+        spaceRepo: { type: string }
+        commitMessage: { type: string, nullable: true }
+        commitSha: { type: string, nullable: true }
+        message: { type: string, nullable: true }
+        logs: { type: string, nullable: true }
+    DeployStatus:
+      type: object
+      required: [job]
+      properties:
+        job: { $ref: "#/components/schemas/DeployJob" }
+        spaceUrl: { type: string, nullable: true }
+        runtimeStage: { type: string, nullable: true }

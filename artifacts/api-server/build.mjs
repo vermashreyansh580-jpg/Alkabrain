@@ -3,7 +3,18 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as esbuild } from "esbuild";
 import esbuildPluginPino from "esbuild-plugin-pino";
-import { rm } from "node:fs/promises";
+import { rm, mkdir, readdir, copyFile, stat } from "node:fs/promises";
+
+async function copyDir(src, dest) {
+  await mkdir(dest, { recursive: true });
+  const entries = await readdir(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) await copyDir(s, d);
+    else if (entry.isFile()) await copyFile(s, d);
+  }
+}
 
 // Plugins (e.g. 'esbuild-plugin-pino') may use `require` to resolve dependencies
 globalThis.require = createRequire(import.meta.url);
@@ -118,6 +129,11 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
     `,
     },
   });
+
+  // Copy HF Space template into dist for production deployments
+  const templateSrc = path.resolve(artifactDir, "src/hf-space-template");
+  const templateDest = path.resolve(distDir, "hf-space-template");
+  await copyDir(templateSrc, templateDest);
 }
 
 buildAll().catch((err) => {
