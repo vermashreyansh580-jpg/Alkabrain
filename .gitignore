@@ -1,9 +1,4 @@
-node_modules
-dist
-build
-.cache
-.local
-.replit-artifact
-*.log
+node_modules/
+dist/
 .env
 .env.local
