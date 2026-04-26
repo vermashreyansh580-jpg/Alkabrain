@@ -169,6 +169,16 @@ export function Home() {
         login();
       } else {
         console.error(error);
+        const fallback =
+          (typeof data === "object" && data && typeof data.error === "string"
+            ? data.error
+            : null) ??
+          (typeof error?.message === "string" ? error.message : null) ??
+          "Something went wrong. Please try again in a moment.";
+        addMessage({
+          role: "assistant",
+          content: `⚠️ ${fallback}`,
+        });
       }
     }
   };
