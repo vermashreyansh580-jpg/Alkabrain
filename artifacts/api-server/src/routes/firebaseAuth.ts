@@ -88,11 +88,15 @@ router.post("/auth/firebase", async (req: Request, res: Response) => {
   res.cookie(SESSION_COOKIE, sid, {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "none",
     path: "/",
     maxAge: SESSION_TTL,
   });
-  res.json({ user: sessionData.user });
+  // Also return the sid in the JSON body so cross-origin clients
+  // (e.g. GitHub Pages frontend) can store it and send it back as
+  // an `Authorization: Bearer <sid>` header — third-party cookies
+  // are blocked by most browsers, so the cookie alone is not enough.
+  res.json({ user: sessionData.user, sid });
 });
 
 router.post("/auth/firebase/logout", async (req: Request, res: Response) => {

@@ -63,12 +63,21 @@ export function Home() {
   ): Promise<void> => {
     setMediaPending(kind);
     try {
-      const base = (import.meta as any).env?.BASE_URL ?? "/";
-      const url = `${base}api/${kind}/generate`;
-      const r = await fetch(url, {
+      const { apiUrl } = await import("@/lib/api-base");
+      let sid: string | null = null;
+      try {
+        sid = globalThis.localStorage?.getItem("alkabrain.sid") ?? null;
+      } catch {
+        sid = null;
+      }
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (sid) headers.Authorization = `Bearer ${sid}`;
+      const r = await fetch(apiUrl(`/api/${kind}/generate`), {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ prompt }),
       });
       if (r.status === 401) {

@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import type { AuthUser } from "@workspace/api-client-react";
+import {
+  setAuthTokenGetter,
+  type AuthUser,
+} from "@workspace/api-client-react";
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import {
   getAuth,
@@ -30,6 +33,47 @@ function getFirebaseAuth(): Auth {
   return authInstance;
 }
 
+const SID_STORAGE_KEY = "alkabrain.sid";
+
+function getApiBase(): string {
+  const env = (import.meta as { env?: Record<string, unknown> }).env ?? {};
+  const raw = env["VITE_API_BASE_URL"];
+  if (typeof raw !== "string") return "";
+  return raw.trim().replace(/\/+$/, "");
+}
+
+function buildApiUrl(path: string): string {
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${getApiBase()}${p}`;
+}
+
+function readStoredSid(): string | null {
+  try {
+    return globalThis.localStorage?.getItem(SID_STORAGE_KEY) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredSid(sid: string | null): void {
+  try {
+    if (!globalThis.localStorage) return;
+    if (sid) globalThis.localStorage.setItem(SID_STORAGE_KEY, sid);
+    else globalThis.localStorage.removeItem(SID_STORAGE_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+// Wire generated API client to send the stored sid as a bearer token.
+// This is the cross-origin-safe replacement for the session cookie.
+setAuthTokenGetter(() => readStoredSid());
+
+function authHeaders(): Record<string, string> {
+  const sid = readStoredSid();
+  return sid ? { Authorization: `Bearer ${sid}` } : {};
+}
+
 interface AuthState {
   user: AuthUser | null;
   isLoading: boolean;
@@ -40,7 +84,10 @@ interface AuthState {
 
 async function fetchMe(): Promise<AuthUser | null> {
   try {
-    const res = await fetch("/api/auth/user", { credentials: "include" });
+    const res = await fetch(buildApiUrl("/api/auth/user"), {
+      credentials: "include",
+      headers: { ...authHeaders() },
+    });
     if (!res.ok) return null;
     const data = (await res.json()) as { user: AuthUser | null };
     return data.user ?? null;
@@ -72,17 +119,23 @@ export function useAuth(): AuthState {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
-      const res = await fetch("/api/auth/firebase", {
+      const res = await fetch(buildApiUrl("/api/auth/firebase"), {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
       if (!res.ok) throw new Error(`Sign-in failed: ${res.status}`);
-      const u = await fetchMe();
-      setUser(u);
+      const data = (await res.json()) as {
+        user: AuthUser;
+        sid?: string;
+      };
+      if (data.sid) writeStoredSid(data.sid);
+      const me = await fetchMe();
+      setUser(me ?? data.user ?? null);
     } catch (err) {
       console.error("Google sign-in failed", err);
+      writeStoredSid(null);
       alert("Sign-in failed. Please try again.");
     }
   }, []);
@@ -90,13 +143,20 @@ export function useAuth(): AuthState {
   const logout = useCallback(async () => {
     try {
       await fbSignOut(getFirebaseAuth());
-    } catch {}
-    await fetch("/api/auth/firebase/logout", {
+    } catch {
+      /* ignore */
+    }
+    await fetch(buildApiUrl("/api/auth/firebase/logout"), {
       method: "POST",
       credentials: "include",
-    }).catch(() => {});
+      headers: { ...authHeaders() },
+    }).catch(() => undefined);
+    writeStoredSid(null);
     setUser(null);
-    window.location.href = "/";
+    const env = (import.meta as { env?: Record<string, unknown> }).env ?? {};
+    const baseUrl =
+      typeof env["BASE_URL"] === "string" ? (env["BASE_URL"] as string) : "/";
+    window.location.href = baseUrl;
   }, []);
 
   return {
