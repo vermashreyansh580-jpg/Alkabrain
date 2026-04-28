@@ -1,14 +1,17 @@
 {
-  "name": "ALKABRAIN",
+  "name": "ALKABRAIN — Your Friendly AI Companion",
   "short_name": "ALKABRAIN",
-  "description": "Your warm AI companion — chat, plan, code, generate images & video.",
+  "description": "ALKABRAIN is a warm AI companion for chat, code, writing, planning, and ideas. Free plan, no card required.",
   "start_url": "/",
   "scope": "/",
+  "id": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#ea580c",
   "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "education"],
   "icons": [
     {
       "src": "icon-192.png",
@@ -27,6 +30,14 @@
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "opengraph.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "label": "ALKABRAIN homepage"
     }
   ]
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <url>
+    <loc>https://alkabrain.tech/</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://alkabrain.tech/opengraph.jpg</image:loc>
+      <image:title>ALKABRAIN — Your Friendly AI Companion</image:title>
+      <image:caption>ALKABRAIN AI chat homepage</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://alkabrain.tech/icon-512.png</image:loc>
+      <image:title>ALKABRAIN logo</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://alkabrain.tech/pricing</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alkabrain.tech/help</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
