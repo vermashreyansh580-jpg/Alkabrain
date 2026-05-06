@@ -1,3 +1,18 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <path d="M52 85 C52 65 65 52 80 52 C82 52 84 52.3 86 53 C88 47 93 43 99 43 C105 43 110 47 112 53 C120 53 128 61 128 70 C133 72 137 78 137 85 C137 91 134 96 129 98 C129 105 124 110 118 111 C117 118 111 123 104 123 C101 123 98 122 96 120 C94 122 91 123 88 123 C81 123 75 118 74 111 C68 110 63 105 63 98 C57 96 52 91 52 85Z" fill="none" stroke="white" stroke-width="5.5" stroke-linejoin="round"/>
+  <line x1="94.5" y1="48" x2="94.5" y2="120" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <line x1="70" y1="72" x2="119" y2="72" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="65" y1="85" x2="124" y2="85" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="70" y1="98" x2="119" y2="98" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="94.5" cy="72" r="5" fill="#FF3C00" stroke="white" stroke-width="2.5"/>
+  <circle cx="94.5" cy="85" r="5" fill="#FF3C00" stroke="white" stroke-width="2.5"/>
+  <circle cx="94.5" cy="98" r="5" fill="#FF3C00" stroke="white" stroke-width="2.5"/>
+  <circle cx="75" cy="72" r="3.5" fill="white"/>
+  <circle cx="68" cy="85" r="3.5" fill="white"/>
+  <circle cx="75" cy="98" r="3.5" fill="white"/>
+  <circle cx="114" cy="72" r="3.5" fill="white"/>
+  <circle cx="121" cy="85" r="3.5" fill="white"/>
+  <circle cx="114" cy="98" r="3.5" fill="white"/>
+  <text x="94.5" y="152" font-family="Arial Black, Arial, sans-serif" font-size="22" font-weight="900" text-anchor="middle" fill="white" letter-spacing="3">AB</text>
 </svg>
