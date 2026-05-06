@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useChatStore } from "@/lib/store";
 import { conversationsApi, type Conversation } from "@/lib/api";
-import logoUrl from "@/assets/alkabrain-logo.png";
+import logoUrl from "@/assets/alkabrain-logo.svg";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
