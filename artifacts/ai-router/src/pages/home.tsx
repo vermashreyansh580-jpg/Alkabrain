@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import logoUrl from "@/assets/alkabrain-logo.png";
+import logoUrl from "@/assets/alkabrain-logo.svg";
 
 const SUGGESTIONS = [
   "Write a Python function to fetch weather data",
