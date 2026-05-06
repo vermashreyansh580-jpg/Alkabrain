@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="102" fill="#FF3C00"/>
+  <path d="M148 242 C148 185 186 148 229 148 C234 148 240 149 245 151 C251 134 265 123 282 123 C299 123 313 134 319 151 C342 151 364 174 364 200 C377 205 390 222 390 242 C390 260 382 274 368 280 C368 299 354 314 337 317 C334 337 318 352 299 352 C291 352 284 349 277 344 C270 349 263 352 255 352 C236 352 220 337 217 317 C200 314 186 299 186 280 C172 274 164 260 164 242 C148 240 140 255 148 242Z" fill="none" stroke="white" stroke-width="16" stroke-linejoin="round"/>
+  <line x1="269" y1="137" x2="269" y2="340" stroke="white" stroke-width="9" stroke-linecap="round"/>
+  <line x1="198" y1="204" x2="340" y2="204" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <line x1="184" y1="242" x2="354" y2="242" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <line x1="198" y1="280" x2="340" y2="280" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="269" cy="204" r="14" fill="#FF3C00" stroke="white" stroke-width="7"/>
+  <circle cx="269" cy="242" r="14" fill="#FF3C00" stroke="white" stroke-width="7"/>
+  <circle cx="269" cy="280" r="14" fill="#FF3C00" stroke="white" stroke-width="7"/>
+  <circle cx="214" cy="204" r="10" fill="white"/>
+  <circle cx="194" cy="242" r="10" fill="white"/>
+  <circle cx="214" cy="280" r="10" fill="white"/>
+  <circle cx="324" cy="204" r="10" fill="white"/>
+  <circle cx="344" cy="242" r="10" fill="white"/>
+  <circle cx="324" cy="280" r="10" fill="white"/>
+  <text x="269" y="435" font-family="Arial Black, Arial, sans-serif" font-size="64" font-weight="900" text-anchor="middle" fill="white" letter-spacing="6">AB</text>
+</svg>
