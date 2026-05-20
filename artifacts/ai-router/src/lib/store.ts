@@ -5,6 +5,14 @@ import type {
   ArtifactPayload,
 } from "@workspace/api-client-react";
 
+export type Attachment = {
+  name: string;
+  type: string;
+  size: number;
+  dataUrl?: string;
+  text?: string;
+};
+
 export type MessageMedia = {
   kind: "image" | "video";
   dataUrl: string;
@@ -19,13 +27,14 @@ export type MessageWithResponse = {
   content: string;
   response?: ChatResponse;
   media?: MessageMedia;
+  attachments?: Attachment[];
 };
 
 interface ChatState {
   messages: MessageWithResponse[];
   activeArtifact: ArtifactPayload | null;
   activeConversationId: number | null;
-  addMessage: (msg: Omit<MessageWithResponse, "id">) => void;
+  addMessage: (msg: Omit<MessageWithResponse, "id"> & { id?: string }) => void;
   setResponse: (id: string, response: ChatResponse) => void;
   setActiveArtifact: (artifact: ArtifactPayload | null) => void;
   setActiveConversation: (id: number | null) => void;
@@ -46,7 +55,7 @@ export const useChatStore = create<ChatState>()(
         set((state) => ({
           messages: [
             ...state.messages,
-            { ...msg, id: Date.now().toString() + Math.random() },
+            { ...msg, id: msg.id ?? Date.now().toString() + Math.random() },
           ],
         })),
       setResponse: (id, response) =>
