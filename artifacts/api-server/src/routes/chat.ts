@@ -21,6 +21,38 @@ const router: IRouter = Router();
 
 const ALKABRAIN_LABEL = "ALKABRAIN";
 
+// Replit server URL for Claude Sonnet code queries
+const REPLIT_CODE_URL =
+  process.env.REPLIT_CODE_URL ??
+  "https://1c65e5d0-4b4b-45d6-a456-a44e27ff456a-00-26qx9lh43rk73.pike.replit.dev/api/code";
+
+const CODE_PATTERNS = [
+  /```/,
+  /\b(code|function|bug|debug|stack\s*trace|compile|typescript|javascript|python|java|c\+\+|rust|golang|sql|regex|api|endpoint|class|method|algorithm|leetcode|refactor|syntax error|runtime error|fix this|implement|write a|create a function|write me a)\b/i,
+];
+
+function isCodeQuery(text: string): boolean {
+  return CODE_PATTERNS.some((p) => p.test(text));
+}
+
+async function callReplitCode(
+  messages: HfMessage[],
+  mode?: string,
+): Promise<string> {
+  const res = await fetch(REPLIT_CODE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages, mode }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Replit code API error (${res.status}): ${text.slice(0, 300)}`);
+  }
+  const data = (await res.json()) as { reply?: string; error?: string };
+  if (!data.reply) throw new Error(data.error ?? "Empty response from code API");
+  return data.reply;
+}
+
 const FALLBACK_MODEL_IDS = [
   "meta-llama/Meta-Llama-3.1-8B-Instruct",
   "meta-llama/Llama-3.3-70B-Instruct",
@@ -160,13 +192,32 @@ router.post("/chat", async (req, res) => {
     ? messages
     : [{ role: "system", content: personaText }, ...messages];
 
+  // Route code queries to Replit Claude Sonnet (unless user pinned a model)
+  const useCode = isCodeQuery(promptText) && !modelId;
   const useDuo =
-    tierDef.multiAgent && decision.intent === "code" && !modelId && mode !== "fast";
+    !useCode &&
+    tierDef.multiAgent &&
+    decision.intent === "code" &&
+    !modelId &&
+    mode !== "fast";
 
   const started = Date.now();
   try {
     let replyText: string;
-    if (useDuo) {
+
+    if (useCode) {
+      try {
+        replyText = await callReplitCode(finalMessages, mode ?? undefined);
+      } catch {
+        // Fallback to HF if Replit code endpoint is unavailable
+        const r = await inferWithFallback(
+          decision.model.id,
+          finalMessages,
+          temperature ?? undefined,
+        );
+        replyText = r.reply;
+      }
+    } else if (useDuo) {
       try {
         const duo = await runCodingDuo(finalMessages, temperature ?? undefined);
         replyText = duo.reply;
@@ -191,7 +242,6 @@ router.post("/chat", async (req, res) => {
     const artifact = extractArtifact(replyText);
     await bumpUsage(userId);
 
-    // Persist assistant reply + bump conversation timestamp
     await db.insert(chatMessagesTable).values({
       conversationId: convId,
       role: "assistant",
@@ -206,7 +256,7 @@ router.post("/chat", async (req, res) => {
       reply: replyText,
       modelId: ALKABRAIN_LABEL,
       modelLabel: ALKABRAIN_LABEL,
-      intent: "general",
+      intent: useCode ? "code" : "general",
       latencyMs,
       conversationId: convId,
       artifact,
